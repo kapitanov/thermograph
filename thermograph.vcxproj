@@ -1,0 +1,146 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{59E74319-9089-4E08-A125-EE188637CCC7}</ProjectGuid>
+    <RootNamespace>thermograph</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v110</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v110</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>C:\dev\tools\arduino\hardware\arduino\cores\arduino;C:\dev\tools\arduino\hardware\arduino\variants\standard;c:\dev\tools\arduino\hardware\tools\avr\avr\include\;c:\dev\tools\arduino\hardware\tools\avr\avr\include\avr\;c:\dev\tools\arduino\hardware\tools\avr\avr\;c:\dev\tools\arduino\hardware\tools\avr\lib\gcc\avr\4.3.2\include\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ForcedIncludeFiles>C:\Users\Альберт\Documents\Arduino\thermograph\Visual Micro\.thermograph.vsarduino.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <IgnoreStandardIncludePath>true</IgnoreStandardIncludePath>
+      <PreprocessorDefinitions>__AVR_ATmega328P__;ARDUINO=101;__AVR__;F_CPU=16000000L;__cplusplus;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <None Include="thermograph.ino">
+      <FileType>CppCode</FileType>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\dev\tools\arduino\hardware\arduino\cores\arduino\Arduino.h" />
+    <ClInclude Include="..\..\..\..\..\dev\tools\arduino\hardware\arduino\cores\arduino\binary.h" />
+    <ClInclude Include="..\..\..\..\..\dev\tools\arduino\hardware\arduino\cores\arduino\Client.h" />
+    <ClInclude Include="..\..\..\..\..\dev\tools\arduino\hardware\arduino\cores\arduino\HardwareSerial.h" />
+    <ClInclude Include="..\..\..\..\..\dev\tools\arduino\hardware\arduino\cores\arduino\IPAddress.h" />
+    <ClInclude Include="..\..\..\..\..\dev\tools\arduino\hardware\arduino\cores\arduino\new.h" />
+    <ClInclude Include="..\..\..\..\..\dev\tools\arduino\hardware\arduino\cores\arduino\Platform.h" />
+    <ClInclude Include="..\..\..\..\..\dev\tools\arduino\hardware\arduino\cores\arduino\Print.h" />
+    <ClInclude Include="..\..\..\..\..\dev\tools\arduino\hardware\arduino\cores\arduino\Printable.h" />
+    <ClInclude Include="..\..\..\..\..\dev\tools\arduino\hardware\arduino\cores\arduino\Server.h" />
+    <ClInclude Include="..\..\..\..\..\dev\tools\arduino\hardware\arduino\cores\arduino\Stream.h" />
+    <ClInclude Include="..\..\..\..\..\dev\tools\arduino\hardware\arduino\cores\arduino\Udp.h" />
+    <ClInclude Include="..\..\..\..\..\dev\tools\arduino\hardware\arduino\cores\arduino\USBAPI.h" />
+    <ClInclude Include="..\..\..\..\..\dev\tools\arduino\hardware\arduino\cores\arduino\USBCore.h" />
+    <ClInclude Include="..\..\..\..\..\dev\tools\arduino\hardware\arduino\cores\arduino\USBDesc.h" />
+    <ClInclude Include="..\..\..\..\..\dev\tools\arduino\hardware\arduino\cores\arduino\WCharacter.h" />
+    <ClInclude Include="..\..\..\..\..\dev\tools\arduino\hardware\arduino\cores\arduino\wiring_private.h" />
+    <ClInclude Include="..\..\..\..\..\dev\tools\arduino\hardware\arduino\cores\arduino\WString.h" />
+    <ClInclude Include="..\..\..\..\..\dev\tools\arduino\hardware\arduino\variants\standard\pins_arduino.h" />
+    <ClInclude Include="app.h" />
+    <ClInclude Include="button.h" />
+    <ClInclude Include="data_history.h" />
+    <ClInclude Include="display.h" />
+    <ClInclude Include="LCDBitmap.h" />
+    <ClInclude Include="LiquidCrystal.h" />
+    <ClInclude Include="log.h" />
+    <ClInclude Include="mode.h" />
+    <ClInclude Include="sensor.h" />
+    <ClInclude Include="time.h" />
+    <ClInclude Include="util.h" />
+    <ClInclude Include="Visual Micro\.thermograph.vsarduino.h" />
+    <ClInclude Include="_config.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\..\..\dev\tools\arduino\hardware\arduino\cores\arduino\CDC.cpp" />
+    <ClCompile Include="..\..\..\..\..\dev\tools\arduino\hardware\arduino\cores\arduino\HardwareSerial.cpp" />
+    <ClCompile Include="..\..\..\..\..\dev\tools\arduino\hardware\arduino\cores\arduino\HID.cpp" />
+    <ClCompile Include="..\..\..\..\..\dev\tools\arduino\hardware\arduino\cores\arduino\IPAddress.cpp" />
+    <ClCompile Include="..\..\..\..\..\dev\tools\arduino\hardware\arduino\cores\arduino\main.cpp" />
+    <ClCompile Include="..\..\..\..\..\dev\tools\arduino\hardware\arduino\cores\arduino\new.cpp" />
+    <ClCompile Include="..\..\..\..\..\dev\tools\arduino\hardware\arduino\cores\arduino\Print.cpp" />
+    <ClCompile Include="..\..\..\..\..\dev\tools\arduino\hardware\arduino\cores\arduino\Stream.cpp" />
+    <ClCompile Include="..\..\..\..\..\dev\tools\arduino\hardware\arduino\cores\arduino\Tone.cpp" />
+    <ClCompile Include="..\..\..\..\..\dev\tools\arduino\hardware\arduino\cores\arduino\USBCore.cpp" />
+    <ClCompile Include="..\..\..\..\..\dev\tools\arduino\hardware\arduino\cores\arduino\WInterrupts.c" />
+    <ClCompile Include="..\..\..\..\..\dev\tools\arduino\hardware\arduino\cores\arduino\wiring.c" />
+    <ClCompile Include="..\..\..\..\..\dev\tools\arduino\hardware\arduino\cores\arduino\wiring_analog.c" />
+    <ClCompile Include="..\..\..\..\..\dev\tools\arduino\hardware\arduino\cores\arduino\wiring_digital.c" />
+    <ClCompile Include="..\..\..\..\..\dev\tools\arduino\hardware\arduino\cores\arduino\wiring_pulse.c" />
+    <ClCompile Include="..\..\..\..\..\dev\tools\arduino\hardware\arduino\cores\arduino\wiring_shift.c" />
+    <ClCompile Include="..\..\..\..\..\dev\tools\arduino\hardware\arduino\cores\arduino\WMath.cpp" />
+    <ClCompile Include="..\..\..\..\..\dev\tools\arduino\hardware\arduino\cores\arduino\WString.cpp" />
+    <ClCompile Include="app.cpp" />
+    <ClCompile Include="button.cpp" />
+    <ClCompile Include="data_history.cpp" />
+    <ClCompile Include="display.cpp" />
+    <ClCompile Include="LCDBitmap.cpp" />
+    <ClCompile Include="LiquidCrystal.cpp" />
+    <ClCompile Include="log.cpp" />
+    <ClCompile Include="mode.cpp" />
+    <ClCompile Include="sensor.cpp" />
+    <ClCompile Include="time.cpp" />
+    <ClCompile Include="util.cpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties arduino.upload.port="COM3" VM.DebugVariablesWindow.ColumnVisibleBreakPointName="1" VM.DebugVariablesWindow.ColumnVisibleFunctionName="1" />
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>
