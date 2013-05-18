@@ -1,19 +1,35 @@
 #include "Arduino.h"
-#include "_config.h"
 #include "data_history.h"
 #include "sensor.h"
 #include "log.h"
 
 using namespace thermograph;
 
+/**
+ *	Sensor service static instance
+ **/
 sensor_service_t thermograph::sensor;
 
+/*
+ ************************************************************************
+ *	thermistor_sensor_node_t
+ *	Thermistor sensor graph node
+ ************************************************************************
+ */
 
-/*** thermistor_sensor_node_t ***/
-
+/**
+ *	Thermistor voltage dividor resistor's resistance
+ **/
 const double thermistor_sensor_node_t::R_D = 1.0*1000;
+
+/**
+ *	Thermistor's resistance at 25 Celsium degrees
+ **/
 const double thermistor_sensor_node_t::R_25 = 10.0*1000;
 
+/**
+ *	Thermistor's approximation data
+ **/
 static thermistor_sensor_node_t::temperature_point_t temperature_points[] =
 {
 	{ -55.0, 121.46 },
@@ -45,6 +61,11 @@ static thermistor_sensor_node_t::temperature_point_t temperature_points[] =
 	{  55.0, 0.27243 }
 };
 
+/**
+ *	Finds a closest temperature point
+ *	@param		r	thermistor's resistance
+ *	@returns	an index of temperature point, -1 if no temperature point has been found
+ **/
 size_t thermistor_sensor_node_t::find_temperature_point(double r)
 {
 	size_t count = sizeof(temperature_points) / sizeof(thermistor_sensor_node_t::temperature_point_t);
@@ -60,7 +81,13 @@ size_t thermistor_sensor_node_t::find_temperature_point(double r)
 	return -1;
 }
 
-double thermistor_sensor_node_t::approximate_temperature(double r, size_t index)
+/**
+ *	Computes temperature
+ *	@param		r		thermistor's resistance
+ *	@param		index	temperature point's index
+ *	@returns	temperature
+ **/
+temp_t thermistor_sensor_node_t::approximate_temperature(double r, size_t index)
 {
 	const thermistor_sensor_node_t::temperature_point_t* p1 = &(temperature_points[index]);
 	const thermistor_sensor_node_t::temperature_point_t* p2 = &(temperature_points[index + 1]);
@@ -78,9 +105,14 @@ double thermistor_sensor_node_t::approximate_temperature(double r, size_t index)
 	double b = p1->t - a * p1->r;
 
 	double t = a*r + b;
-	return t;
+	return (temp_t)t;
 }
 
+/**
+ *	Retreives node's current value
+ *	@param		time	current global time
+ *	@returns	node's temperature value
+ **/
 const temp_t thermistor_sensor_node_t::update(const time_t& time)
 {
 	log_event_t e = log.begin_event(LOG_DEBUG);
@@ -107,17 +139,78 @@ const temp_t thermistor_sensor_node_t::update(const time_t& time)
 		return -1;
 	}
 
-	temp_t t = (float)approximate_temperature(k, index);
+	temp_t t = approximate_temperature(k, index);
 	e.printf(F("t = %f deg C"), &t);
 
 	return t;
 }
 
-/*** filter_sensor_node_t ***/
+/*
+ ************************************************************************
+ *	lm35_sensor_node_t
+ *	LM35 sensor graph node
+ ************************************************************************
+ */
 
+/**
+ *	Initializes a sensor node
+ **/
+void lm35_sensor_node_t::init()
+{
+#ifdef LM35_USE_INTERNAL_REF
+	analogReference(INTERNAL);
+#endif
+}
+
+/**
+ *	Retreives node's current value
+ *	@param		time	current global time
+ *	@returns	node's temperature value
+ **/
+const temp_t lm35_sensor_node_t::update(const time_t& time)
+{
+	int reading = analogRead(_port);
+#ifdef LM35_USE_INTERNAL_REF
+	temp_t temp = reading / 9.31;
+#else
+	temp_t temp = (5.0 * reading* 100.0) / 1024;
+#endif
+
+	log.debug(F("lm35_sensor\tupdate(): raw = %d, temp = %f"), reading, &temp);
+	return temp;
+}
+
+/*
+ ************************************************************************
+ *	filter_sensor_node_t
+ *	Temperature value's filter sensor graph node
+ ************************************************************************
+ */
+
+/**
+ *	Attaches filter to the sensor graph node
+ *	@param	source	source graph node
+ **/
+void filter_sensor_node_t::attach_to(sensor_node_t& source)
+{
+	_source = &source;
+	_is_first_step = true;
+}
+
+/**
+ *	Retreives node's current value
+ *	@param		time	current global time
+ *	@returns	node's temperature value
+ **/
 const temp_t filter_sensor_node_t::update(const time_t& time)
 {
-	temp_t t = _source.update(time);
+	if(_source == NULL)
+	{
+		log.error(F("filter_sensor_node\tupdate(): source node is not set"));
+		return 0;
+	}
+
+	temp_t t = _source->update(time);
 	if(_is_first_step)
 	{
 		for(size_t i = 0; i < FILTER_KERNEL_LENGTH; i++)
@@ -158,28 +251,98 @@ const temp_t filter_sensor_node_t::update(const time_t& time)
 	return _last_value;
 }
 
-/*** sensor_service_t ***/
+/*
+ ************************************************************************
+ *	sensor_service_t::temperature_source_t
+ *	Temperature source base class
+ ************************************************************************
+ */
 
+/**
+ *	Initializes temperature sensor
+ **/
+void sensor_service_t::temperature_source_t::init()
+{
+#ifdef APP_ENABLE_FILTER
+	sensor_node_t& sensor = get_sensor();
+	sensor.init();
+	_filter.attach_to(sensor);
+#else
+	get_sensor().init();
+#endif
+}
+
+/**
+ *	Updates sensor value
+ *	@param	time	current global time
+ **/
+void sensor_service_t::temperature_source_t::update(time_t& time)
+{
+#ifdef APP_ENABLE_FILTER
+	_last_temp = _filter.update(time);
+#else
+	_last_temp = get_sensor().update(time);
+#endif
+}
+
+/*
+ ************************************************************************
+ *	sensor_service_t
+ *	Sensor service class
+ ************************************************************************
+ */
+
+/**
+ *	Constructor
+ **/
 sensor_service_t::sensor_service_t()
-	: _sensor(APP_SENSOR_PORT),
-	  _filter(_sensor),
-	  _source(&_sensor)
+	: _indoor_source(APP_INDOOR_SENSOR_PORT),
+	  _outdoor_source(APP_OUTDOOR_SENSOR_PORT)
 { }
 
+/**
+ *	Initializes sensors
+ **/
+void sensor_service_t::init()
+{
+	log.debug(F("sensor_service\tinit()"));
+
+	_indoor_source.init();
+	_outdoor_source.init();
+}
+
+/**
+ *	Updates sensor values
+ *	@param	policy	sensor update policy
+ **/
 void sensor_service_t::update(update_policy policy)
 {
 	sys_time_t time = time_service.get_systime();
 	if(execute_policy(time, policy))
 	{
-		_last_temp = _sensor.update(time_service.get_time());
-		_last_updated = time;
+		time_t time = time_service.get_time();
+		_indoor_source.update(time);
+		_outdoor_source.update(time);
+		_last_updated = time_service.get_systime();
 
-		log.info(F("sensor_service\tupdate(): t = %f deg"), &_last_temp);
+		temp_t outdoor_temp = _outdoor_source.get_temp();
+		temp_t indoor_temp = _indoor_source.get_temp();
 
-		data_history.push(time_service.get_time(), _last_temp);
+		log.info(F("sensor_service\tupdate(): t_in = %f deg, t_out = %f deg"), 
+			&indoor_temp,
+			&outdoor_temp);
+
+		data_history.push(SENSOR_ID_OUTDOOR, time, outdoor_temp);
+		data_history.push(SENSOR_ID_INDOOR, time, indoor_temp);
 	}
 }
 
+/**
+ *	Determines whether sensor values should be updated
+ *	@param		time	current local time
+ *	@param		policy	sensor value update policy
+ *	@returns	a value indicating whether sensor values should be updated or not.
+ **/
 bool sensor_service_t::execute_policy(const sys_time_t& time, update_policy policy)
 {
 	switch (policy)
@@ -202,7 +365,20 @@ bool sensor_service_t::execute_policy(const sys_time_t& time, update_policy poli
 	}
 }
 
-temp_t sensor_service_t::get_temp() const
+/**
+ *	Retreives a sensor's last value
+ *	@param		id	sensor's id
+ *	@returns	sensor's last value
+ **/
+const temp_t sensor_service_t::get_temp(sensor_id id) const
 {
-	return _last_temp;
+	switch (id)
+	{
+	case SENSOR_ID_OUTDOOR:
+		return _outdoor_source.get_temp();
+	case SENSOR_ID_INDOOR:
+		return _indoor_source.get_temp();
+	default:
+		break;
+	}
 }

@@ -6,23 +6,42 @@
 
 using namespace thermograph;
 
+/**
+ *	Measurements' history storage static instance
+ **/
 data_history_t thermograph::data_history;
 
-void data_history_t::push(const time_t& time, const temp_t t)
+/*
+ ************************************************************************
+ *	data_history_t
+ *	Measurements' history storage class
+ ************************************************************************
+ */
+
+/**
+ *	Pushes a new value into the history
+ *	@param	id		sensor's ID
+ *	@param	time	current global time
+ *	@param	t		measurement result
+ **/
+void data_history_t::push(const sensor_id id, const time_t& time, const temp_t t)
 {
+	data_point_t* points = get_array(id);
+
 	if(_is_first)
 	{
+		// If history is empty then fill the history with current value
 		for (size_t i = 0; i < DATA_POINTS_COUNT; i++)
 		{
-			_points[i - 1].time =time;
-			_points[i - 1].value =  t;
+			points[i - 1].time =time;
+			points[i - 1].value =  t;
 		}
 
 		_is_first = false;
 	}
 	else
 	{
-		time_t& last_time = _points[DATA_POINTS_COUNT - 1].time;
+		time_t& last_time = points[DATA_POINTS_COUNT - 1].time;
 		long delta = 
 			time.sec - last_time.sec +
 			(time.min - last_time.min) * 60 +
@@ -30,28 +49,39 @@ void data_history_t::push(const time_t& time, const temp_t t)
 
 		if(delta < APP_HISTORY_INTERVAL)
 		{
+			// Ignore value updates if it happened too fast
 			return;
 		}
 
+		// Move measurement results in order to free the last array item
 		for (size_t i = 1; i < DATA_POINTS_COUNT; i++)
 		{
-			_points[i - 1].time = _points[i].time;
-			_points[i - 1].value =  _points[i].value;
+			points[i - 1].time = points[i].time;
+			points[i - 1].value =  points[i].value;
 		}
 
-		data_point_t& point = _points[DATA_POINTS_COUNT - 1];
+		// Write current value into the last array item
+		data_point_t& point = points[DATA_POINTS_COUNT - 1];
 		point.time = time;
 		point.value = t;
 	}
 
+	// Increment revision number
 	_rev++;
 
 	log.info(F("data_history\tpush(): new data point, t = %f deg, rev = #%d"), &t, _rev);
 }
 
-
-void data_history_t::get_points(byte* arr) const
+/**
+ *	Retrieves last measurement results in normalized form.
+ *	Measurement results will be normalized to [0, 255] range
+ *	@param	id	sensor's ID
+ *	@param	arr	an array for measurement results. Must have at least DATA_POINTS_COUNT items
+ */
+void data_history_t::get_points(const sensor_id id, byte* arr) const
 {
+	const data_point_t* points = get_array(id);
+
 #ifdef APP_CHART_MODE_AVG
 	float ps[DATA_POINTS_COUNT];
 
@@ -59,7 +89,7 @@ void data_history_t::get_points(byte* arr) const
 	float min = 1000, max = -1000, avg = 0;
 	for (int i = 0; i < DATA_POINTS_COUNT; i++)
 	{
-		float x = _points[i].value;
+		float x = points[i].value;
 		ps[i] = x;
 
 		if(x > max)
@@ -99,7 +129,7 @@ void data_history_t::get_points(byte* arr) const
 	float max = -1000;
 	for (int i = 0; i < DATA_POINTS_COUNT; i++)
 	{
-		int x = _points[i].value;
+		int x = points[i].value;
 		ps[i] = x;
 		if(x > max)
 		{
@@ -123,4 +153,22 @@ void data_history_t::get_points(byte* arr) const
 
 	e.printf(F("]"));
 #endif
+}
+
+/**
+ *	Gets an array containing measurement results for specified sensor
+ *	@param		id	sensor's ID
+ *	@returns	an array of measurement data points
+**/
+data_history_t::data_point_t* data_history_t::get_array(const sensor_id id) const
+{
+	switch (id)
+	{
+	case SENSOR_ID_INDOOR:
+		return _indoor_points;
+	case SENSOR_ID_OUTDOOR:
+		return _outdoor_points;
+	default:
+		return NULL;
+	}
 }

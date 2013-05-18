@@ -3,8 +3,22 @@
 
 using namespace thermograph;
 
+/**
+ *	Time service static instance
+ **/
 thermograph::time_service_t thermograph::time_service;
 
+/*
+ ************************************************************************
+ *	time_service_t
+ *	Time service class
+ ************************************************************************
+ */
+
+/**
+ *	Gets current global time
+ *	@returns	current global time value
+ **/
 const time_t time_service_t::get_time() const
 {
 	time_t time;
@@ -17,6 +31,9 @@ const time_t time_service_t::get_time() const
 	return time;
 }
 
+/**
+ *	Time service static instance
+ **/
 const sys_time_t time_service_t::get_systime() const
 {
 	sys_time_t time;

@@ -5,15 +5,36 @@
 
 using namespace thermograph;
 
+/**
+ *	Display adapter static instance
+ **/
 display_t thermograph::display;
 
+/*
+ ************************************************************************
+ *	display_t
+ *	Display adapter class
+ ************************************************************************
+ */
+
+/**
+ *	LCD character width, in pixels
+ **/
 const int display_t::CHAR_WIDTH = 5;
 
+/*** display_t - display adapter class ***/
+
+/**
+ *	Constructor
+ **/
 display_t::display_t()
 	: _lcd(LCD_RS_PORT, LCD_ENABLE_PORT, LCD_D0_PORT, LCD_D1_PORT, LCD_D2_PORT, LCD_D3_PORT),
 	_bitmap(&_lcd, LCD_BITMAP_X, LCD_BITMAP_Y)
 { }
 
+/**
+ *	Initializes the display
+ **/
 void display_t::init()
 {
 	log.debug(F("display\tinit"));
@@ -25,6 +46,12 @@ void display_t::init()
 	log.debug(F("display\tdone"));
 }
 
+/**
+ *	Helper function to convert a number into a custom_char value
+ *	@param	x	a number to convert. 
+ *				Must be within [0, 9] range, a '?' character will be returned otherwise.
+ *	@returns	a value of custom_char
+ **/
 custom_char display_t::to_custom_char(int x)
 {
 	custom_char c = CHAR_QUESTION;
@@ -65,11 +92,22 @@ custom_char display_t::to_custom_char(int x)
 	return c;
 }
 
+/**
+ *	Prints a number on an LCD bitmap 
+ *	@param	index	an index of a character on the bitmap. Must be within [0, 3] range.
+ *	@param	x		a number to display. 
+ *					Must be within [0, 9] range, a '?' character will be displayed otherwise
+ **/
 void display_t::print_g(int index, int x)
 {
 	print_g(index, to_custom_char(x));
 }
 
+/**
+ *	Prints a characher on an LCD bitmap 
+ *	@param	index	an index of a character on the bitmap. Must be within [0, 3] range.
+ *	@param	c		a characher to display. 
+ **/
 void display_t::print_g(int index, custom_char c)
 {	
 	int offset = index*CHAR_WIDTH;
@@ -117,6 +155,10 @@ void display_t::print_g(int index, custom_char c)
 	}
 }
 
+/**
+ *	Prints 4 characters on an LCD bitmap
+ *	@param	c	an array of characters to print
+ **/
 void display_t::print_g(const custom_char c[4])
 {
 	for(size_t i = 0; i < 4; i++)
@@ -127,6 +169,10 @@ void display_t::print_g(const custom_char c[4])
 	_bitmap.update();
 }
 
+/**
+ *	Draws a '0' character onto LCD bitmap
+ *	@param	offset	an offset to draw a character, in pixels
+ **/
 void display_t::print_0(int offset)
 {
 	/********************/
@@ -156,6 +202,10 @@ void display_t::print_0(int offset)
 	_bitmap.line(offset + 0, 13, offset + 0,  2, ON);
 }
 
+/**
+ *	Draws a '1' character onto LCD bitmap
+ *	@param	offset	an offset to draw a character, in pixels
+ **/
 void display_t::print_1(int offset)
 {
 	/********************/
@@ -181,6 +231,10 @@ void display_t::print_1(int offset)
 	_bitmap.line(offset + 2, 2, offset + 4,  0, ON);
 }
 
+/**
+ *	Draws a '2' character onto LCD bitmap
+ *	@param	offset	an offset to draw a character, in pixels
+ **/
 void display_t::print_2(int offset)
 {
 	/********************/
@@ -215,6 +269,10 @@ void display_t::print_2(int offset)
 	_bitmap.line(offset + 0, 15, offset + 4, 15, ON);
 }
 
+/**
+ *	Draws a '3' character onto LCD bitmap
+ *	@param	offset	an offset to draw a character, in pixels
+ **/
 void display_t::print_3(int offset)
 {
 	/********************/
@@ -246,6 +304,10 @@ void display_t::print_3(int offset)
 	_bitmap.line(offset + 1, 15, offset + 0, 14, ON);
 }
 
+/**
+ *	Draws a '4' character onto LCD bitmap
+ *	@param	offset	an offset to draw a character, in pixels
+ **/
 void display_t::print_4(int offset)
 {
 	/********************/
@@ -272,6 +334,10 @@ void display_t::print_4(int offset)
 	_bitmap.line(offset + 0, 9, offset + 4, 9, ON);
 }
 
+/**
+ *	Draws a '5' character onto LCD bitmap
+ *	@param	offset	an offset to draw a character, in pixels
+ **/
 void display_t::print_5(int offset)
 {
 	/********************/
@@ -303,6 +369,10 @@ void display_t::print_5(int offset)
 	_bitmap.line(offset + 1, 15, offset + 0, 14, ON);
 }
 
+/**
+ *	Draws a '6' character onto LCD bitmap
+ *	@param	offset	an offset to draw a character, in pixels
+ **/
 void display_t::print_6(int offset)
 {
 	/********************/
@@ -334,6 +404,10 @@ void display_t::print_6(int offset)
 	_bitmap.line(offset + 2,  5, offset + 0,  7, ON);
 }
 
+/**
+ *	Draws a '7' character onto LCD bitmap
+ *	@param	offset	an offset to draw a character, in pixels
+ **/
 void display_t::print_7(int offset)
 {
 	/********************/
@@ -363,6 +437,10 @@ void display_t::print_7(int offset)
 	_bitmap.line(offset + 0, 13, offset + 0, 15, ON);
 }
 
+/**
+ *	Draws a '8' character onto LCD bitmap
+ *	@param	offset	an offset to draw a character, in pixels
+ **/
 void display_t::print_8(int offset)
 {
 	/********************/
@@ -399,6 +477,10 @@ void display_t::print_8(int offset)
 	_bitmap.line(offset + 0,  9, offset + 0,  13, ON);
 }
 
+/**
+ *	Draws a '9' character onto LCD bitmap
+ *	@param	offset	an offset to draw a character, in pixels
+ **/
 void display_t::print_9(int offset)
 {
 	/********************/
@@ -430,6 +512,10 @@ void display_t::print_9(int offset)
 	_bitmap.line(offset + 2,  8, offset + 4,  6, ON);
 }
 
+/**
+ *	Draws a degree sign character onto LCD bitmap
+ *	@param	offset	an offset to draw a character, in pixels
+ **/
 void display_t::print_deg(int offset)
 {
 	/********************/
@@ -457,6 +543,10 @@ void display_t::print_deg(int offset)
 	_bitmap.line(offset + 3, 0, offset + 3, 3, ON);
 }
 
+/**
+ *	Draws a Celsium sign character onto LCD bitmap
+ *	@param	offset	an offset to draw a character, in pixels
+ **/
 void display_t::print_c(int offset)
 {
 	/********************/
@@ -485,6 +575,10 @@ void display_t::print_c(int offset)
 	_bitmap.line(offset + 2, 15, offset + 4, 13, ON);
 }
 
+/**
+ *	Draws a '?' character onto LCD bitmap
+ *	@param	offset	an offset to draw a character, in pixels
+ **/
 void display_t::print_question(int offset)
 {
 	/********************/

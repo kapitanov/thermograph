@@ -5,13 +5,29 @@
 
 using namespace thermograph;
 
+/**
+*	Logger static instance
+**/
 log_t thermograph::log;
 
+/*
+ ************************************************************************
+ *	log_event_t
+ *	Log event writer
+ ************************************************************************
+ */
 
+/**
+*	Constructor
+*	@param	enable	indicates whether current log writer instance is allowed to write any data into log
+**/
 log_event_t::log_event_t(bool enable)
 	: _enable(enable)
 { }
 
+/**
+*	Destructor
+**/
 log_event_t::~log_event_t()
 {
 	if(_enable)
@@ -21,6 +37,10 @@ log_event_t::~log_event_t()
 	}
 }
 
+/**
+*	Appends a formatted text into log
+*	@param	msg	format string
+**/
 void log_event_t::printf(const char* msg, ...)
 {
 	if(_enable)
@@ -31,6 +51,10 @@ void log_event_t::printf(const char* msg, ...)
 	}
 }
 
+/**
+*	Appends a formatted text into log
+*	@param	msg	format string
+**/
 void log_event_t::printf(__FlashStringHelper* msg, ...)
 {
 	if(_enable)
@@ -41,13 +65,28 @@ void log_event_t::printf(__FlashStringHelper* msg, ...)
 	}
 }
 
-/*** log_t public members ***/
+/*
+ ************************************************************************
+ *	log_t
+ *	Logger class
+ ************************************************************************
+ */
 
+/** public members **/
+
+/**
+*	Initializes logging
+*	@param	baud	serial port baud rate
+**/
 void log_t::init(const long baud)
 {
 	Serial.begin(baud);
 }
 
+/**
+*	Writes a formatted message with ERR log level into log
+*	@param	msg	format string
+**/
 void log_t::error(const char* msg, ...)
 {
 	va_list args;
@@ -55,6 +94,10 @@ void log_t::error(const char* msg, ...)
 	print(LOG_ERROR, msg, args);
 }
 
+/**
+*	Writes a formatted message with INF log level into log
+*	@param	msg	format string
+**/
 void log_t::info(const char* msg, ...)
 {
 	va_list args;
@@ -62,6 +105,10 @@ void log_t::info(const char* msg, ...)
 	print(LOG_INFO, msg, args);
 }
 
+/**
+*	Writes a formatted message with DBG log level into log
+*	@param	msg	format string
+**/
 void log_t::debug(const char* msg, ...)
 {
 	va_list args;
@@ -69,6 +116,10 @@ void log_t::debug(const char* msg, ...)
 	print(LOG_DEBUG, msg, args);
 }
 
+/**
+*	Writes a formatted message with ERR log level into log
+*	@param	msg	format string
+**/
 void log_t::error(__FlashStringHelper* msg, ...)
 {
 	va_list args;
@@ -76,6 +127,10 @@ void log_t::error(__FlashStringHelper* msg, ...)
 	print(LOG_ERROR, msg, args);
 }
 
+/**
+*	Writes a formatted message with INF log level into log
+*	@param	msg	format string
+**/
 void log_t::info(__FlashStringHelper* msg, ...)
 {
 	va_list args;
@@ -83,6 +138,10 @@ void log_t::info(__FlashStringHelper* msg, ...)
 	print(LOG_INFO, msg, args);
 }
 
+/**
+*	Writes a formatted message with DBG log level into log
+*	@param	msg	format string
+**/
 void log_t::debug(__FlashStringHelper* msg, ...)
 {
 	va_list args;
@@ -90,6 +149,11 @@ void log_t::debug(__FlashStringHelper* msg, ...)
 	print(LOG_DEBUG, msg ,args);
 }
 
+/**
+*	Starts writing an event using log event writer.
+*	@param		level	log level
+*	@returns	log event writer
+**/
 log_event_t log_t::begin_event(log_level level)
 {
 #ifndef ENABLE_DEBUG_LOGGING
@@ -103,8 +167,14 @@ log_event_t log_t::begin_event(log_level level)
 	return log_event_t(true);
 }
 
-/*** log_t private members ***/
+/**	private members	**/
 
+/**
+*	Writes a formatted message into log
+*	@param	level	log level
+*	@param	format	format string
+*	@params	args	format arguments list
+**/
 void log_t::print(log_level level, const char* format, va_list args)
 {
 #ifndef ENABLE_DEBUG_LOGGING
@@ -121,6 +191,12 @@ void log_t::print(log_level level, const char* format, va_list args)
 	Serial.flush();
 }
 
+/**
+*	Writes a formatted message into log
+*	@param	level	log level
+*	@param	format	format string
+*	@params	args	format arguments list
+**/
 void log_t::print(log_level level, __FlashStringHelper* format, va_list args)
 {
 #ifndef ENABLE_DEBUG_LOGGING
@@ -137,6 +213,10 @@ void log_t::print(log_level level, __FlashStringHelper* format, va_list args)
 	Serial.flush();
 }
 
+/**
+*	Writes a log message header
+*	@param	level	log level
+*/
 void log_t::print_header(log_level level)
 {
 	__FlashStringHelper* header;
@@ -167,6 +247,10 @@ void log_t::print_header(log_level level)
 	Serial.print('\t');
 }
 
+/**
+*	Writes a formatted global time into log
+*	@param	time global time
+**/
 void log_t::print_time(const time_t& time)
 {
 	print_formatted_number(time.h, 2);
@@ -176,6 +260,10 @@ void log_t::print_time(const time_t& time)
 	print_formatted_number(time.sec, 2);
 }
 
+/**
+*	Writes a formatted local time into log
+*	@param	time local time
+**/
 void log_t::print_time(const sys_time_t& time)
 {
 	print_formatted_number(time.h, 4, ' ');
@@ -187,12 +275,23 @@ void log_t::print_time(const sys_time_t& time)
 	print_formatted_number(time.ms, 3);
 }
 
+/**
+*	Writes a formatted decimal number into log
+*	@param	value		a number to write
+*	@param	precision	amount of decimal places
+*	@param	placeholder	a placeholder character
+**/
 void log_t::print_formatted_number(int value, int precision, char placeholder)
 {
 	util::print_number(Serial, value, precision, placeholder);
 	return;
 }
 
+/**
+*	Writes a formatted message into log
+*	@param	format	format string
+*	@params	args	format arguments list
+**/
 void log_t::print_message(__FlashStringHelper* format_ptr, va_list args) 
 {
 	uint16_t address = reinterpret_cast<uint16_t>(format_ptr);
@@ -328,6 +427,11 @@ void log_t::print_message(__FlashStringHelper* format_ptr, va_list args)
 	}
 }
 
+/**
+*	Writes a formatted message into log
+*	@param	format	format string
+*	@params	args	format arguments list
+**/
 void log_t::print_message(const char *format, va_list args) 
 {
 	// loop through format string
