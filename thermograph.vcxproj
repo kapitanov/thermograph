@@ -93,6 +93,7 @@
     <ClInclude Include="app.h" />
     <ClInclude Include="button.h" />
     <ClInclude Include="data_history.h" />
+    <ClInclude Include="DHT.h" />
     <ClInclude Include="display.h" />
     <ClInclude Include="LCDBitmap.h" />
     <ClInclude Include="LiquidCrystal.h" />
@@ -126,6 +127,7 @@
     <ClCompile Include="app.cpp" />
     <ClCompile Include="button.cpp" />
     <ClCompile Include="data_history.cpp" />
+    <ClCompile Include="DHT.cpp" />
     <ClCompile Include="display.cpp" />
     <ClCompile Include="LCDBitmap.cpp" />
     <ClCompile Include="LiquidCrystal.cpp" />

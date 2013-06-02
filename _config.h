@@ -3,7 +3,7 @@
 /* 
  * Internal tempature sensor's port
  */
-#define APP_INDOOR_SENSOR_PORT A1
+#define APP_INDOOR_SENSOR_PORT /* A1 */ 2
 
 /* 
  * External tempature sensor's port
@@ -11,9 +11,9 @@
 #define APP_OUTDOOR_SENSOR_PORT A2
 
 /* 
- * Temperature sensors' update period, in milliseconds
+ * Temperature sensors' update period, in seconds
  */
-#define APP_SENSOR_PERIOD ((long)1000*10) /* ms */
+#define APP_SENSOR_PERIOD ((long)10) /* sec */
 
 
 /*

@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include "_config.h"
 #include "time.h"
+#include "DHT.h"
 
 namespace thermograph
 {
@@ -137,6 +138,55 @@ namespace thermograph
 		 **/
 		uint8_t _port;
 	};
+
+	/**
+	 *	DHT sensor type
+	 **/
+	enum dht_sensor_type
+	{
+		/**
+		 *	DHT11
+		 **/
+		DHT_11,
+
+		/**
+		 *	DHT22
+		 **/
+		DHT_22
+	};
+
+	/**
+	 *	DHT11/DHT22 sensor graph node
+	 **/
+	class dht_sensor_node_t : public sensor_node_t
+	{
+	public:
+		/**
+		 *	Constructor
+		 *	@param	port	sensor port
+		 *	@param	type	sensor type
+		 **/
+		dht_sensor_node_t(uint8_t port, dht_sensor_type type);
+
+		/**
+		 *	Initializes a sensor node
+		 **/
+		virtual void init();
+
+		/**
+		 *	Retreives node's current value
+		 *	@param		time	current global time
+		 *	@returns	node's temperature value
+		 **/
+		virtual const temp_t update(const time_t& time);
+
+	private:
+		/**
+		 *	DHT sensor adapter
+		 **/
+		DHT _dht;
+	};
+
 
 	/**
 	 *	Temperature value's filter sensor graph node
@@ -353,7 +403,7 @@ namespace thermograph
 			 *	Constructor
 			 *	@param	port	sensor port
 			 **/
-			indoor_temperature_source_t(int port) : _sensor(port) { }
+			indoor_temperature_source_t(int port) : _sensor(port, DHT_11) { }
 			
 		protected:
 			/**
@@ -366,7 +416,7 @@ namespace thermograph
 			/**
 			 *	Temperature sensor
 			 **/
-			lm35_sensor_node_t _sensor;
+			dht_sensor_node_t _sensor;
 		};
 
 		/**

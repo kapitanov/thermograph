@@ -32,6 +32,8 @@ extern "C" void __cxa_pure_virtual() {;}
 #include "C:\dev\tools\arduino\hardware\arduino\variants\standard\pins_arduino.h" 
 #include "C:\dev\tools\arduino\hardware\arduino\cores\arduino\arduino.h"
 #include "C:\Users\Альберт\Documents\Arduino\thermograph\thermograph.ino"
+#include "C:\Users\Альберт\Documents\Arduino\thermograph\DHT.cpp"
+#include "C:\Users\Альберт\Documents\Arduino\thermograph\DHT.h"
 #include "C:\Users\Альберт\Documents\Arduino\thermograph\LCDBitmap.cpp"
 #include "C:\Users\Альберт\Documents\Arduino\thermograph\LCDBitmap.h"
 #include "C:\Users\Альберт\Documents\Arduino\thermograph\LiquidCrystal.cpp"

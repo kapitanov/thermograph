@@ -182,6 +182,52 @@ const temp_t lm35_sensor_node_t::update(const time_t& time)
 
 /*
  ************************************************************************
+ *	lm35_sensor_node_t
+ *	LM35 sensor graph node
+ ************************************************************************
+ */
+
+/**
+ *	Constructor
+ *	@param	port	sensor port
+ *	@param	type	sensor type
+ **/
+dht_sensor_node_t::dht_sensor_node_t(uint8_t port, dht_sensor_type type)
+	: _dht(port, type == DHT_11 ? DHT11 : DHT22)
+{
+}
+
+/**
+ *	Initializes a sensor node
+ **/
+void dht_sensor_node_t::init()
+{
+	_dht.begin();
+	log.debug(F("dht_sensor\tinit()"));
+}
+
+/**
+ *	Retreives node's current value
+ *	@param		time	current global time
+ *	@returns	node's temperature value
+ **/
+const temp_t dht_sensor_node_t::update(const time_t& time)
+{
+	float humidity = _dht.readHumidity();
+	float temperature= _dht.readTemperature();
+
+	if(isnan(humidity) || isnan(temperature))
+	{
+		log.error(F("dht_sensor\tupdate(): unable to read data from sensor"));
+		return 0;
+	}
+
+	log.debug(F("dht_sensor\tupdate(): humidity = %f%%, temperature = %f deg C"), &humidity, &temperature);
+	return static_cast<temp_t>(temperature);
+}
+
+/*
+ ************************************************************************
  *	filter_sensor_node_t
  *	Temperature value's filter sensor graph node
  ************************************************************************
@@ -350,9 +396,8 @@ bool sensor_service_t::execute_policy(const sys_time_t& time, update_policy poli
 	case thermograph::sensor_service_t::UP_DEFAULT:
 		{
 			long delta = 0;
-			delta += time.ms - _last_updated.ms;
-			delta += (time.sec - _last_updated.sec) * 1000;
-			delta += (time.min - _last_updated.min) * 60 * 1000;
+			delta += (time.sec - _last_updated.sec);
+			delta += (time.min - _last_updated.min) * 60;
 
 			return (delta >= APP_SENSOR_PERIOD);
 		}
