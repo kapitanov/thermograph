@@ -10,6 +10,7 @@ namespace thermograph
 	 **/
 	enum custom_char
 	{
+		CHAR_NONE,
 		CHAR_0,
 		CHAR_1,
 		CHAR_2,
@@ -22,6 +23,7 @@ namespace thermograph
 		CHAR_9,
 		CHAR_DEG,
 		CHAR_C,
+		CHAR_PERCENT,
 		CHAR_QUESTION
 	};
 
@@ -169,6 +171,12 @@ namespace thermograph
 		 *	@param	offset	an offset to draw a character, in pixels
 		 **/
 		void print_c(int offset);
+
+		/**
+		 *	Draws a '%' character onto LCD bitmap
+		 *	@param	offset	an offset to draw a character, in pixels
+		 **/
+		void print_percent(int offset);
 
 		/**
 		 *	Draws a '?' character onto LCD bitmap

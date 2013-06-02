@@ -9,442 +9,469 @@
 namespace thermograph
 {
 	/**
-	 *	Temperature
-	 */
-	typedef float temp_t;
+	*	Temperature
+	*/
+	typedef float temperature_t;
 
 	/**
-	 *	Sensor graph node
-	 **/
+	*	Humidity
+	*/
+	typedef float humidity_t;
+
+	/**
+	*	A wrapper class for optional values
+	*/
+	template<typename T>
+	class optional_t
+	{
+	public:
+		/**
+		*	Gets a wrapped value
+		*	@returns	a wrapped value if it's set, a default value of T otherwise
+		*/
+		const T& value() const { return _value; }
+
+		/**
+		*	Gets a value indicating whether a value is set or not
+		*	@return	true if value is set, false otherwise
+		*/
+		const bool has_value() const { return _has_value; }
+
+		/**
+		*	Factory method to create a value's wrapper
+		*	@param		value	a value to wrap
+		*	@returns	a wrapper for specified value
+		*/
+		static optional_t<T> create(const T& value)
+		{
+			optional_t<T> wrapper;
+			wrapper._has_value = true;
+			wrapper._value = value;
+			return wrapper;
+		}
+
+		/**
+		*	Factory method to create a empty wrapper
+		*	@returns	an empty wrapper
+		*/
+		static optional_t<T> empty()
+		{
+			optional_t<T> wrapper;
+			wrapper._has_value = false;
+			return wrapper;
+		}
+
+	private:
+		T	 _value;
+		bool _has_value;
+	};
+
+	/**
+	*	Sensor's readings
+	*/
+	class reading_t
+	{
+	public:
+		/**
+		*	Constructor
+		*	@param	temperature	temperature's reading
+		*	@param	humidity	humidity's reading
+		*/
+		reading_t(const optional_t<temperature_t>& temperature, const optional_t<humidity_t>& humidity);
+
+		/**
+		*	Gets a temperature's reading
+		*	@returns	a temperature's reading
+		*/
+		const optional_t<temperature_t>& temperature() const { return _temperature; }
+
+		/**
+		*	Gets a humidity's reading
+		*	@returns	a humidity's reading
+		*/
+		const optional_t<humidity_t>& humidity() const { return _humidity; }
+
+	private:
+		const optional_t<temperature_t> _temperature;
+		const optional_t<humidity_t> _humidity;
+	};
+
+	/**
+	*	Sensor graph node
+	**/
 	class sensor_node_t
 	{
 	public:
 		/**
-		 *	Destructor
-		 **/
+		*	Destructor
+		**/
 		virtual ~sensor_node_t() { }
 
 		/**
-		 *	Initializes a sensor node
-		 **/
+		*	Initializes a sensor node
+		**/
 		virtual void init() { }
 
 		/**
-		 *	Retreives node's current value
-		 *	@param		time	current global time
-		 *	@returns	node's temperature value
-		 **/
-		virtual const temp_t update(const time_t& time) = 0;
+		*	Retreives node's current value
+		*	@param		time	current global time
+		*	@returns	node's temperature value
+		**/
+		virtual const reading_t update(const time_t& time) = 0;
 	};
 
 	/**
-	 *	Thermistor sensor graph node
-	 **/
+	*	Thermistor sensor graph node
+	**/
 	class thermistor_sensor_node_t : public sensor_node_t
 	{
 	public:
 		/**
-		 *	Constructor
-		 *	@param	port	sensor port
-		 **/
+		*	Constructor
+		*	@param	port	sensor port
+		**/
 		thermistor_sensor_node_t(uint8_t port)
 			: _port(port)
 		{ }
 
 		/**
-		 *	Retreives node's current value
-		 *	@param		time	current global time
-		 *	@returns	node's temperature value
-		 **/
-		virtual const temp_t update(const time_t& time);
+		*	Retreives node's current value
+		*	@param		time	current global time
+		*	@returns	node's temperature value
+		**/
+		virtual const reading_t update(const time_t& time);
 
 		/**
-		 *	Temperature point for approximation
-		 **/
+		*	Temperature point for approximation
+		**/
 		struct temperature_point_t
 		{
 			/**
-			 *	Temperature
-			 **/
+			*	Temperature
+			**/
 			double t;
 
 			/**
-			 *	Resistance
-			 **/
+			*	Resistance
+			**/
 			double r;
 		};
 
 	private:
 		/**
-		 *	Sensor port
-		 **/
+		*	Sensor port
+		**/
 		uint8_t _port;
 
 		/**
-		 *	Thermistor voltage dividor resistor's resistance
-		 **/
+		*	Thermistor voltage dividor resistor's resistance
+		**/
 		static const double R_D;
 
 		/**
-		 *	Thermistor's resistance at 25 Celsium degrees
-		 **/
+		*	Thermistor's resistance at 25 Celsium degrees
+		**/
 		static const double R_25;
-		
+
 		/**
-		 *	Finds a closest temperature point
-		 *	@param		r	thermistor's resistance
-		 *	@returns	an index of temperature point, -1 if no temperature point has been found
-		 **/
+		*	Finds a closest temperature point
+		*	@param		r	thermistor's resistance
+		*	@returns	an index of temperature point, -1 if no temperature point has been found
+		**/
 		static size_t find_temperature_point(double r);
 
 		/**
-		 *	Computes temperature
-		 *	@param		r		thermistor's resistance
-		 *	@param		index	temperature point's index
-		 *	@returns	temperature
-		 **/
-		static temp_t approximate_temperature(double r, size_t index);
+		*	Computes temperature
+		*	@param		r		thermistor's resistance
+		*	@param		index	temperature point's index
+		*	@returns	temperature
+		**/
+		static temperature_t approximate_temperature(double r, size_t index);
 	};
 
 	/**
-	 *	LM35 sensor graph node
-	 **/
+	*	LM35 sensor graph node
+	**/
 	class lm35_sensor_node_t : public sensor_node_t
 	{
 	public:
 		/**
-		 *	Constructor
-		 *	@param	port	sensor port
-		 **/
+		*	Constructor
+		*	@param	port	sensor port
+		**/
 		lm35_sensor_node_t(uint8_t port)
 			: _port(port)
 		{ }
 
 		/**
-		 *	Initializes a sensor node
-		 **/
+		*	Initializes a sensor node
+		**/
 		virtual void init();
 
 		/**
-		 *	Retreives node's current value
-		 *	@param		time	current global time
-		 *	@returns	node's temperature value
-		 **/
-		virtual const temp_t update(const time_t& time);
+		*	Retreives node's current value
+		*	@param		time	current global time
+		*	@returns	node's temperature value
+		**/
+		virtual const reading_t update(const time_t& time);
 
 	private:
 		/**
-		 *	Sensor port
-		 **/
+		*	Sensor port
+		**/
 		uint8_t _port;
 	};
 
 	/**
-	 *	DHT sensor type
-	 **/
+	*	DHT sensor type
+	**/
 	enum dht_sensor_type
 	{
 		/**
-		 *	DHT11
-		 **/
+		*	DHT11
+		**/
 		DHT_11,
 
 		/**
-		 *	DHT22
-		 **/
+		*	DHT22
+		**/
 		DHT_22
 	};
 
 	/**
-	 *	DHT11/DHT22 sensor graph node
-	 **/
+	*	DHT11/DHT22 sensor graph node
+	**/
 	class dht_sensor_node_t : public sensor_node_t
 	{
 	public:
 		/**
-		 *	Constructor
-		 *	@param	port	sensor port
-		 *	@param	type	sensor type
-		 **/
+		*	Constructor
+		*	@param	port	sensor port
+		*	@param	type	sensor type
+		**/
 		dht_sensor_node_t(uint8_t port, dht_sensor_type type);
 
 		/**
-		 *	Initializes a sensor node
-		 **/
+		*	Initializes a sensor node
+		**/
 		virtual void init();
 
 		/**
-		 *	Retreives node's current value
-		 *	@param		time	current global time
-		 *	@returns	node's temperature value
-		 **/
-		virtual const temp_t update(const time_t& time);
+		*	Retreives node's current value
+		*	@param		time	current global time
+		*	@returns	node's temperature value
+		**/
+		virtual const reading_t update(const time_t& time);
 
 	private:
 		/**
-		 *	DHT sensor adapter
-		 **/
+		*	DHT sensor adapter
+		**/
 		DHT _dht;
 	};
 
-
 	/**
-	 *	Temperature value's filter sensor graph node
-	 **/
-	class filter_sensor_node_t : public sensor_node_t
-	{
-	public:
-		/**
-		 *	Constructor
-		 *	@param	source	source graph node
-		 **/
-		filter_sensor_node_t(sensor_node_t& source)
-			: _source(&source),
-			  _is_first_step(true)
-		{ }
-
-		/**
-		 *	Constructor
-		 **/
-		filter_sensor_node_t()
-			: _source(NULL),
-			  _is_first_step(true)
-		{ }
-
-		/**
-		 *	Attaches filter to the sensor graph node
-		 *	@param	source	source graph node
-		 **/
-		void attach_to(sensor_node_t& source);
-
-		/**
-		 *	Retreives node's current value
-		 *	@param		time	current global time
-		 *	@returns	node's temperature value
-		 **/
-		virtual const temp_t update(const time_t& time);
-
-	private:
-		/**
-		 *	Source graph node
-		 **/
-		sensor_node_t* _source;
-
-		/**
-		 *	Filter's kernel size
-		 **/
-		static const size_t FILTER_KERNEL_LENGTH = 3;
-
-		/**
-		 *	Filter's kernel
-		 **/
-		temp_t _kernel[FILTER_KERNEL_LENGTH];
-
-		/**
-		 *	Last temperature value
-		 **/
-		temp_t _last_value;
-
-		/**
-		 *	Indicates whether a filter has been initialized
-		 **/
-		bool _is_first_step;
-	};
-
-	/**
-	 *	Sensor ID
-	 **/
+	*	Sensor ID
+	**/
 	enum sensor_id
 	{
 		/**
-		 *	Outdoor sensor
-		 **/
+		*	Outdoor sensor
+		**/
 		SENSOR_ID_OUTDOOR,
 
 		/**
-		 *	Indoor sensor
-		 **/
+		*	Indoor sensor
+		**/
 		SENSOR_ID_INDOOR
 	};
 
 	/**
-	 *	Sensor service class
-	 **/
+	*	Sensor service class
+	**/
 	class sensor_service_t
 	{
 	public:
 		/**
-		 *	Constructor
-		 **/
+		*	Constructor
+		**/
 		sensor_service_t();
 
 		/**
-		 *	Sensor update policy enumeration
-		 **/
+		*	Sensor update policy enumeration
+		**/
 		enum update_policy
 		{
 			/**
-			 *	Update sensor values by timer
-			 **/
+			*	Update sensor values by timer
+			**/
 			UP_DEFAULT,
 
 			/**
-			 *	Force sensor values update
-			 **/
+			*	Force sensor values update
+			**/
 			UP_FORCE
 		};
 
 		/**
-		 *	Initializes sensors
-		 **/
+		*	Initializes sensors
+		**/
 		void init();
 
 		/**
-		 *	Updates sensor values
-		 *	@param	policy	sensor update policy
-		 **/
+		*	Updates sensor values
+		*	@param	policy	sensor update policy
+		**/
 		void update(update_policy policy = UP_DEFAULT);
 
 		/**
-		 *	Retreives a sensor's last value
-		 *	@param		id	sensor's id
-		 *	@returns	sensor's last value
-		 **/
-		const temp_t get_temp(sensor_id id) const;
+		*	Retreives a sensor's last temperature value
+		*	@param		id	sensor's id
+		*	@returns	sensor's last value
+		**/
+		const optional_t<temperature_t> get_temperature(sensor_id id) const;
+
+		/**
+		*	Retreives a sensor's last humidity value
+		*	@param		id	sensor's id
+		*	@returns	sensor's last value
+		**/
+		const optional_t<humidity_t> get_humidity(sensor_id id) const;
 
 	private:
 		/**
-		 *	Temperature source base class
-		 **/
-		class temperature_source_t
+		*	Temperature and humidity source base class
+		**/
+		class source_t
 		{
 		public:
 			/**
-			 *	Destructor
-			 **/
-			virtual ~temperature_source_t() { }
+			*	Destructor
+			**/
+			virtual ~source_t() { }
 
 			/**
-			 *	Initializes temperature sensor
-			 **/
+			*	Initializes temperature sensor
+			**/
 			virtual void init();
 
 			/**
-			 *	Retreives sensor's last temperature
-			 **/
-			const temp_t get_temp() const { return _last_temp; }
+			*	Retreives sensor's last temperature
+			**/
+			const optional_t<temperature_t> get_temperature() const { return _last_temperature; }
 
 			/**
-			 *	Updates sensor value
-			 *	@param	time	current global time
-			 **/
+			*	Retreives sensor's last humidity
+			**/
+			const optional_t<humidity_t> get_humidity() const { return _last_humidity; }
+
+			/**
+			*	Updates sensor value
+			*	@param	time	current global time
+			**/
 			void update(time_t& time);
 
-		protected:
-#ifdef APP_ENABLE_FILTER
 			/**
-			 *	Constructor
-			 **/
-			temperature_source_t() : _filter() { }
-#endif
-			/**
-			 *	Returns a reference to the sensor assiciated with current source
-			 *	@returns	a reference to the sensor
-			 **/
+			*	Returns a reference to the sensor assiciated with current source
+			*	@returns	a reference to the sensor
+			**/
 			virtual sensor_node_t& get_sensor() = 0;
 
 		private:
-#ifdef APP_ENABLE_FILTER
 			/**
-			 *	Temperature sensor values filters
-			 **/
-			filter_sensor_node_t _filter;
-#endif
+			* Last temperature
+			**/
+			optional_t<temperature_t> _last_temperature;
 
 			/**
-			 * Last temperature
-			 **/
-			temp_t _last_temp;
+			* Last humidity
+			**/
+			optional_t<humidity_t> _last_humidity;
 		};
 
 		/**
-		 * Outdoor temperature source
-		 **/
-		class outdoor_temperature_source_t : public temperature_source_t
+		* Outdoor source
+		**/
+		class outdoor_source_t : public source_t
 		{
 		public:
 			/**
-			 *	Constructor
-			 *	@param	port	sensor port
-			 **/
-			outdoor_temperature_source_t(int port) : _sensor(port) { }
-			
+			*	Constructor
+			*	@param	port	sensor port
+			**/
+			outdoor_source_t(int port) : _sensor(port, DHT_11) { }
+
 		protected:
 			/**
-			 *	Returns a reference to the sensor assiciated with current source
-			 *	@returns	a reference to the sensor
-			 **/
+			*	Returns a reference to the sensor assiciated with current source
+			*	@returns	a reference to the sensor
+			**/
 			virtual sensor_node_t& get_sensor() { return _sensor; }
 
 		private:
 			/**
-			 *	Temperature sensor
-			 **/
-			thermistor_sensor_node_t _sensor;
-		};
-
-		/**
-		 *	Indoor temperature source
-		 **/
-		class indoor_temperature_source_t : public temperature_source_t
-		{
-		public:
-			/**
-			 *	Constructor
-			 *	@param	port	sensor port
-			 **/
-			indoor_temperature_source_t(int port) : _sensor(port, DHT_11) { }
-			
-		protected:
-			/**
-			 *	Returns a reference to the sensor assiciated with current source
-			 *	@returns	a reference to the sensor
-			 **/
-			virtual sensor_node_t& get_sensor() { return _sensor; }
-
-		private:
-			/**
-			 *	Temperature sensor
-			 **/
+			*	Temperature sensor
+			**/
 			dht_sensor_node_t _sensor;
 		};
 
 		/**
-		 *	Indoor temperature source
-		 **/		
-		indoor_temperature_source_t _indoor_source;
+		*	Indoor source
+		**/
+		class indoor_source_t : public source_t
+		{
+		public:
+			/**
+			*	Constructor
+			*	@param	port	sensor port
+			**/
+			indoor_source_t(int port) : _sensor(port, DHT_11) { }
+
+		protected:
+			/**
+			*	Returns a reference to the sensor assiciated with current source
+			*	@returns	a reference to the sensor
+			**/
+			virtual sensor_node_t& get_sensor() { return _sensor; }
+
+		private:
+			/**
+			*	Temperature sensor
+			**/
+			dht_sensor_node_t _sensor;
+		};
 
 		/**
-		 *	Outdoor temperature source
-		 **/
-		outdoor_temperature_source_t _outdoor_source;
-		
+		*	Indoor source
+		**/		
+		indoor_source_t _indoor_source;
+
 		/**
-		 *	Last update time
-		 **/
+		*	Outdoor source
+		**/
+		outdoor_source_t _outdoor_source;
+
+		/**
+		*	Last update time
+		**/
 		sys_time_t _last_updated;
 
 		/**
-		 *	Determines whether sensor values should be updated
-		 *	@param		time	current local time
-		 *	@param		policy	sensor value update policy
-		 *	@returns	a value indicating whether sensor values should be updated or not.
-		 **/
+		*	Determines whether sensor values should be updated
+		*	@param		time	current local time
+		*	@param		policy	sensor value update policy
+		*	@returns	a value indicating whether sensor values should be updated or not.
+		**/
 		bool execute_policy(const sys_time_t& time, update_policy policy);
+
+		/**
+		*	Writes current readings into the log
+		*/
+		void log_readings();
 	};
 
 	/**
-	 *	Sensor service static instance
-	 **/
+	*	Sensor service static instance
+	**/
 	extern sensor_service_t sensor;
 }

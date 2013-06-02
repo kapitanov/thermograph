@@ -63,9 +63,25 @@ namespace thermograph
 	};
 
 	/**
-	 *	Temperature display app mode
+	 *	A value to display
+	 */
+	enum value_id
+	{
+		/**
+		 *	Temperature
+		 */
+		VALUE_TEMPERATURE,
+
+		/**
+		 *	Humidity
+		 */
+		VALUE_HUMIDITY
+	};
+
+	/**
+	 *	Expanded display app mode
 	 **/
-	class temperature_display_mode_t : public mode_t
+	class expanded_display_mode_t : public mode_t
 	{
 	public:
 		/**
@@ -98,15 +114,35 @@ namespace thermograph
 		sensor_id _sensor_id;
 
 		/**
-		 *	Prints current temperature
+		 *	Active value ID
+		 */
+		value_id _value_id;
+
+		/**
+		 *	Prints current value
+		 **/
+		void update_display();
+
+		/**
+		 *	Prints current temperature value
 		 **/
 		void print_temperature();
+
+		/**
+		 *	Prints current humidity value
+		 **/
+		void print_humidity();
+
+		/**
+		 *	Prints current sensor name
+		 */
+		void print_sensor_name();
 	};
 
 	/**
-	 *	Temperature and time display app mode
+	 *	Condensed display app mode
 	 **/
-	class temperature_and_time_display_mode_t : public mode_t
+	class condensed_display_mode_t : public mode_t
 	{
 	public:
 		/**
@@ -131,12 +167,12 @@ namespace thermograph
 		/**
 		 *	Last displayed temperature
 		 **/
-		int _last_temp;
+		int _last_temperature;
 
 		/**
-		 *	Last displayed time
+		 *	Last displayed humidity
 		 **/
-		time_t _last_time;
+		int _last_humidity;
 
 		/**
 		 *	Active sensor ID
@@ -144,9 +180,9 @@ namespace thermograph
 		sensor_id _sensor_id;
 
 		/**
-		 *	Prints current temperature
+		 *	Prints current values
 		 **/
-		void print_temperature();
+		void print();
 	};
 
 	/**

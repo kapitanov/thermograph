@@ -149,6 +149,9 @@ void display_t::print_g(int index, custom_char c)
 	case thermograph::CHAR_C:
 		print_c(offset);
 		break;
+	case thermograph::CHAR_PERCENT:
+		print_percent(offset);
+		break;
 	case thermograph::CHAR_QUESTION:
 		print_question(offset);
 		break;
@@ -573,6 +576,44 @@ void display_t::print_c(int offset)
 	_bitmap.line(offset + 0,  2, offset + 0, 13, ON);
 	_bitmap.line(offset + 0, 13, offset + 2, 15, ON);
 	_bitmap.line(offset + 2, 15, offset + 4, 13, ON);
+}
+
+/**
+ *	Draws a '%' character onto LCD bitmap
+ *	@param	offset	an offset to draw a character, in pixels
+ **/
+void display_t::print_percent(int offset)
+{
+	/********************/
+	/*** +XXXXXX----+ ***/
+	/*** |XX--XX----| ***/
+	/*** |XXXXXX----| ***/
+	/*** |--------XX| ***/
+	/*** |--------XX| ***/
+	/*** |------XX--| ***/
+	/*** |------XX--| ***/
+	/*** +----XX----+ ***/
+	/********************/
+	/*** +----XX----+ ***/
+	/*** |--XX------| ***/
+	/*** |--XX------| ***/
+	/*** |XX--------| ***/
+	/*** |XX--------| ***/
+	/*** |----XXXXXX| ***/
+	/*** |----XX--XX| ***/
+	/*** +----XXXXXX+ ***/
+	/********************/
+	_bitmap.line(offset + 0,  0, offset + 2,  0, ON);
+	_bitmap.line(offset + 2,  0, offset + 2,  2, ON);
+	_bitmap.line(offset + 2,  2, offset + 0,  2, ON);
+	_bitmap.line(offset + 0,  2, offset + 0,  0, ON);
+
+	_bitmap.line(offset + 2,  13, offset + 4, 13, ON);
+	_bitmap.line(offset + 4,  13, offset + 4, 15, ON);
+	_bitmap.line(offset + 4,  15, offset + 2, 15, ON);
+	_bitmap.line(offset + 2,  15, offset + 2, 13, ON);
+
+	_bitmap.line(offset + 4,  3, offset + 0,  12, ON);
 }
 
 /**

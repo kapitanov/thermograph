@@ -34,8 +34,8 @@ void app_t::init()
 	sensor.init();
 	
 	// Assign app mode pointers
-	_modes[0] = &_temperature_display_mode;
-	_modes[1] = &_temperature_and_time_display_mode;
+	_modes[0] = &_expanded_display_mode;
+	_modes[1] = &_condensed_display_mode;
 	_modes[2] = &_temperature_chart_display_mode;
 
 	// Initialize app modes

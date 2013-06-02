@@ -133,7 +133,13 @@
     <ClCompile Include="LiquidCrystal.cpp" />
     <ClCompile Include="log.cpp" />
     <ClCompile Include="mode.cpp" />
+    <ClCompile Include="mode_condensed.cpp" />
+    <ClCompile Include="mode_expanded.cpp" />
+    <ClCompile Include="mode_temperature_chart.cpp" />
     <ClCompile Include="sensor.cpp" />
+    <ClCompile Include="sensor_dht.cpp" />
+    <ClCompile Include="sensor_lm35.cpp" />
+    <ClCompile Include="sensor_thermistor.cpp" />
     <ClCompile Include="time.cpp" />
     <ClCompile Include="util.cpp" />
   </ItemGroup>

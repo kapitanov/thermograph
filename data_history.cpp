@@ -24,7 +24,7 @@ data_history_t thermograph::data_history;
  *	@param	time	current global time
  *	@param	t		measurement result
  **/
-void data_history_t::push(const sensor_id id, const time_t& time, const temp_t t)
+void data_history_t::push(const sensor_id id, const time_t& time, const temperature_t t)
 {
 	data_point_t* points = get_array(id);
 

@@ -29,12 +29,12 @@ namespace thermograph
 		/**
 		 *	App mode - temperature display
 		 **/
-		temperature_display_mode_t _temperature_display_mode;
+		expanded_display_mode_t _expanded_display_mode;
 
 		/**
-		 *	App mode - temperature and time display
+		 *	App mode - condensed display
 		 **/
-		temperature_and_time_display_mode_t _temperature_and_time_display_mode;
+		condensed_display_mode_t _condensed_display_mode;
 
 		/**
 		 *	App mode - temperature chart display

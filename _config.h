@@ -3,12 +3,12 @@
 /* 
  * Internal tempature sensor's port
  */
-#define APP_INDOOR_SENSOR_PORT /* A1 */ 2
+#define APP_INDOOR_SENSOR_PORT 3
 
 /* 
  * External tempature sensor's port
  */
-#define APP_OUTDOOR_SENSOR_PORT A2
+#define APP_OUTDOOR_SENSOR_PORT 2
 
 /* 
  * Temperature sensors' update period, in seconds
@@ -26,16 +26,6 @@
  * Uses normalization to boundaries otherwise
  */
 #define APP_CHART_MODE_AVG
-
-/*
- * Delta neighborhood for measurements' filter
- */
-#define APP_FILTER_DELTA 1.0
-
-/*
- * Enable measurements' filter
- */
-//#define APP_ENABLE_FILTER
 
 /*
  * LCD display ports

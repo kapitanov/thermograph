@@ -27,7 +27,7 @@ namespace thermograph
 		 *	@param	time	current global time
 		 *	@param	t		measurement result
 		 **/
-		void push(const sensor_id id, const time_t& time, const temp_t t);
+		void push(const sensor_id id, const time_t& time, const temperature_t t);
 
 		/**
 		 *	Retrieves last measurement results in normalized form.
@@ -53,7 +53,7 @@ namespace thermograph
 			/**
 			 *	Measured value
 			 */
-			temp_t value;
+			temperature_t value;
 
 			/**
 			 *	Global tme of measurement
